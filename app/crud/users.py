@@ -15,8 +15,8 @@ def create_user(*, db: Session, user: UserCreate) -> UserResponse:
     db.refresh(new_user)
     return new_user
 
-def get_user_by_email(*, db: Session, user: UserCreate) -> UserCreate:
-    db_user = db.query(user_model.User).filter(user_model.User.email == user.email).first()
+def get_user_by_email(*, db: Session, email: str) -> UserCreate:
+    db_user = db.query(user_model.User).filter(user_model.User.email == email).first()
     if not db_user:
         raise HTTPException(status_code=400, detail="Email does not exist")
     return db_user

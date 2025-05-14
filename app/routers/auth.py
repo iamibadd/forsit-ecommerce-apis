@@ -9,7 +9,7 @@ router = APIRouter()
 
 @router.post("/login")
 def login(user_credentials: UserLogin, db: SessionDep):
-    user = user_crud.get_user_by_email(db=db, user=user_credentials)
+    user = user_crud.get_user_by_email(db=db, email=user_credentials.email)
 
     if not verify_password(user_credentials.password, user.password):
         raise HTTPException(status_code=401, detail="Invalid email or password")
