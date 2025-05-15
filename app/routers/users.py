@@ -6,6 +6,7 @@ from app.crud import users as user_crud
 
 router = APIRouter()
 
+
 @router.post("", response_model=UserResponse)
 def create_user(user_body: UserCreate, db: SessionDep):
     user = user_crud.create_user(db=db, user=user_body)

@@ -3,6 +3,7 @@ from app.dependencies import UserDep
 
 router = APIRouter()
 
+
 @router.get("")
 def get_products(user: UserDep):
     return {
