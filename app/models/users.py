@@ -1,10 +1,14 @@
-from app.database.base import Base
-from sqlalchemy import Column, Integer, String, Boolean
+from pydantic import EmailStr
+from sqlmodel import Field, SQLModel
 
 
-class User(Base):
-    __tablename__ = "users"
-    id = Column(Integer, primary_key=True, index=True)
-    email = Column(String(255), unique=True, index=True)
-    password = Column(String(255))
-    is_admin = Column(Boolean, default=True)
+class UserBase(SQLModel):
+    email: EmailStr = Field(unique=True, index=True, max_length=255)
+    password: str = Field(max_length=255)
+    is_admin: bool = True
+
+
+class User(UserBase, table=True):
+    __tablename__ = 'users'
+
+    id: int | None = Field(default=None, primary_key=True, index=True)

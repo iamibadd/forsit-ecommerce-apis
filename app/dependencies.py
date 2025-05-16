@@ -1,7 +1,7 @@
 from fastapi import Depends, Query, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordBearer
-from sqlalchemy.orm import Session
 from typing import Annotated, Optional
+from sqlmodel import Session  # <-- Import Session from sqlmodel
 from app.database.session import get_db
 from app.crud.users import get_user_by_email
 from app.utils.auth import verify_access_token
@@ -23,7 +23,9 @@ class CustomOAuth2PasswordBearer(OAuth2PasswordBearer):
 
 
 oauth2_scheme = CustomOAuth2PasswordBearer(tokenUrl="/api/auth/login")
+
 SessionDep = Annotated[Session, Depends(get_db)]
+
 TokenDep = Annotated[str, Depends(oauth2_scheme)]
 
 

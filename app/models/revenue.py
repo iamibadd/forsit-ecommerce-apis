@@ -1,11 +1,22 @@
-from sqlalchemy import Column, Integer, DECIMAL, DateTime, ForeignKey
-from app.database.base import Base
+from typing import TYPE_CHECKING
+from sqlmodel import SQLModel, Field, Relationship
+from datetime import date
 
 
-class Revenue(Base):
-    __tablename__ = "revenue"
+if TYPE_CHECKING:
+    from .sales import Sale
 
-    id = Column(Integer, primary_key=True, index=True)
-    sale_id = Column(Integer, ForeignKey('sales.id'))
-    revenue_amount = Column(DECIMAL(10, 2), nullable=False)
-    created_at = Column(DateTime, nullable=False)
+
+class RevenueBase(SQLModel):
+    revenue_amount: float = Field(nullable=False)
+    created_at: date
+
+
+class Revenue(RevenueBase, table=True):
+    __tablename__ = 'revenue'
+
+    id: int | None = Field(default=None, primary_key=True, index=True)
+    sale_id: int = Field(foreign_key="sales.id", ondelete="CASCADE")
+
+    # Relationships
+    sales: list["Sale"] = Relationship(back_populates="revenue")

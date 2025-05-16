@@ -10,8 +10,8 @@ def create_user(*, db: Session, user: UserCreate) -> UserResponse:
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
     hashed_password = hash_password(user.password)
-    new_user = User(email=user.email, password=hashed_password,
-                    is_admin=user.is_admin)
+    updated_fields = {"password": hashed_password}
+    new_user = User.model_validate(user, update=updated_fields)
     db.add(new_user)
     db.commit()
     db.refresh(new_user)

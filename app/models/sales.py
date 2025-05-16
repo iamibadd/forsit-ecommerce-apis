@@ -1,15 +1,24 @@
-from sqlalchemy import Column, Integer, DECIMAL, Date, ForeignKey
-from sqlalchemy.orm import relationship
-from app.database.base import Base
+from typing import TYPE_CHECKING
+from datetime import date
+from sqlmodel import SQLModel, Field, Relationship, Date
+
+if TYPE_CHECKING:
+    from .products import Product
+    from .revenue import Revenue
 
 
-class Sale(Base):
+class SaleBase(SQLModel):
+    quantity: int
+    total_price: float
+    sale_date: date
+
+
+class Sale(SaleBase, table=True):
     __tablename__ = "sales"
 
-    id = Column(Integer, primary_key=True, index=True)
-    product_id = Column(Integer, ForeignKey('products.id'))
-    quantity = Column(Integer, nullable=False)
-    total_price = Column(DECIMAL(10, 2), nullable=False)
-    sale_date = Column(Date, nullable=False)
+    id: int | None = Field(default=None, primary_key=True, index=True)
+    product_id: int = Field(foreign_key="products.id", ondelete="CASCADE")
 
-    product = relationship("Product", back_populates="sales")
+    # Relationships
+    product: list["Product"] = Relationship(back_populates="sales")
+    revenue: list["Revenue"] = Relationship(back_populates="sales")

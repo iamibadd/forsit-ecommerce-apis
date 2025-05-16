@@ -1,12 +1,18 @@
-from sqlalchemy import Column, Integer, String
-from sqlalchemy.orm import relationship
-from app.database.base import Base
+from typing import TYPE_CHECKING
+from sqlmodel import SQLModel, Field, Relationship
+
+if TYPE_CHECKING:
+    from .products import Product
 
 
-class Category(Base):
+class CategoryBase(SQLModel):
+    name: str
+
+
+class Category(CategoryBase, table=True):
     __tablename__ = "categories"
 
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(255), nullable=False)
+    id: int | None = Field(default=None, primary_key=True, index=True)
 
-    products = relationship("Product", back_populates="category")
+    # Relationships
+    product: list["Product"] = Relationship(back_populates="category")
