@@ -11,7 +11,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="Forsit E-commerce Admin API", lifespan=lifespan)
 
-api_v2_router = APIRouter(prefix="/v2/api")
+api_v2_router = APIRouter(prefix="/v2")
 api_v2_router.include_router(users.router)
 api_v2_router.include_router(auth.router)
 api_v2_router.include_router(products.router)
