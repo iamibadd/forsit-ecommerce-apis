@@ -2,7 +2,7 @@ from fastapi import HTTPException, status
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import func
 from app.models import Product, Category
-from app.schemas.pagination import PaginationParams
+from app.schemas.helpers import Pagination
 from app.schemas.products import ProductCreate, ProductStatsMetric
 
 
@@ -14,7 +14,7 @@ def raise_not_found_if_empty(data: list, resource: str, resource_id: int, offset
         )
 
 
-def create_product(db: Session, product: ProductCreate) -> Product:
+def create_product(*, db: Session, product: ProductCreate) -> Product:
     category = db.get(Category, product.category_id)
     raise_not_found_if_empty(category, "category", product.category_id)
     db_product = Product.model_validate(product)
@@ -24,14 +24,14 @@ def create_product(db: Session, product: ProductCreate) -> Product:
     return db_product
 
 
-def get_products(*, db: Session, pagination: PaginationParams, name: str | None = None, description: str | None = None) -> list[Product]:
+def get_products(*, db: Session, filter: Pagination, name: str | None = None, description: str | None = None) -> list[Product]:
     query = db.query(Product)
     if name:
         query = query.filter(Product.name.ilike(f"%{name}%"))
     if description:
         query = query.filter(Product.description.ilike(f"%{description}%"))
-    products = query.offset(offset=pagination.offset).limit(
-        limit=pagination.limit).all()
+    products = query.offset(offset=filter.offset).limit(
+        limit=filter.limit).all()
     return products
 
 
@@ -41,16 +41,16 @@ def get_product_by_id(*, db: Session, product_id: int) -> Product:
     return product
 
 
-def get_products_by_category(*, db: Session, category_id: int, pagination: PaginationParams) -> list[Product]:
+def get_products_by_category(*, db: Session, category_id: int, filter: Pagination) -> list[Product]:
     products = db.query(Product).join(Category).options(joinedload(Product.category)).filter(Product.category_id == category_id).offset(
-        pagination.offset).limit(pagination.limit).all()
+        filter.offset).limit(filter.limit).all()
     raise_not_found_if_empty(products, "category",
-                             category_id, pagination.offset)
+                             category_id, filter.offset)
     return products
 
 
-def get_product_stat(*, db: Session, params: ProductStatsMetric) -> int | float:
-    metric = params.metric
+def get_product_stat(*, db: Session, filter: ProductStatsMetric) -> int | float:
+    metric = filter.metric
 
     if metric == "total_price":
         result = db.query(func.sum(Product.price)

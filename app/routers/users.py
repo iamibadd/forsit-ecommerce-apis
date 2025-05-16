@@ -4,7 +4,7 @@ from app.schemas.users import UserCreate, UserResponse
 from app.crud import users as user_crud
 
 
-router = APIRouter(prefix="/items", tags=["items"])
+router = APIRouter(prefix="/users", tags=["Users"])
 
 
 @router.post("", response_model=UserResponse)

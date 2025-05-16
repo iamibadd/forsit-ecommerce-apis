@@ -1,13 +1,14 @@
+from app.models.users import User
 from fastapi import Depends, Query, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordBearer
 from typing import Annotated, Optional
-from sqlmodel import Session  # <-- Import Session from sqlmodel
+from sqlmodel import Session
+from datetime import date
 from app.database.session import get_db
 from app.crud.users import get_user_by_email
 from app.utils.auth import verify_access_token
 from app.schemas.users import UserResponse
-from app.schemas.pagination import PaginationParams
-from app.models.users import User
+from app.schemas.helpers import Pagination, PaginatedDateFilter, DateFilter
 
 
 class CustomOAuth2PasswordBearer(OAuth2PasswordBearer):
@@ -62,8 +63,36 @@ UserDep = Annotated[User, Depends(get_current_user)]
 def pagination_params(
     offset: int = Query(0, description="Offset for pagination"),
     limit: int = Query(100, description="Limit for pagination"),
-) -> PaginationParams:
-    return PaginationParams(offset=offset, limit=limit)
+) -> Pagination:
+    return Pagination(offset=offset, limit=limit)
 
 
-PaginationDep = Annotated[PaginationParams, Depends(pagination_params)]
+PaginationDep = Annotated[Pagination, Depends(pagination_params)]
+
+
+def paginated_date_filter_params(
+    offset: int = Query(0, description="Offset for pagination"),
+    limit: int = Query(100, description="Limit for pagination"),
+    start_date: date = Query(..., description="Start date for filtering"),
+    end_date: date = Query(..., description="End date for filtering"),
+) -> PaginatedDateFilter:
+    return PaginatedDateFilter(
+        offset=offset, limit=limit, start_date=start_date, end_date=end_date
+    )
+
+
+PaginatedDateFilterDep = Annotated[PaginatedDateFilter, Depends(
+    paginated_date_filter_params)]
+
+
+def date_filter_params(
+    start_date: date = Query(..., description="Start date for filtering"),
+    end_date: date = Query(..., description="End date for filtering"),
+) -> DateFilter:
+    return DateFilter(
+        start_date=start_date, end_date=end_date
+    )
+
+
+DateFilterDep = Annotated[DateFilter, Depends(
+    paginated_date_filter_params)]

@@ -7,20 +7,6 @@ from app.schemas.products import Product, ProductCategory, ProductCreate, Produc
 router = APIRouter(prefix="/products", tags=["Products"])
 
 
-@router.get("", response_model=list[Product])
-def get_products(
-    db: SessionDep,
-    pagination: PaginationDep,
-    name: Annotated[str, Query(
-        description="Filter by product name")] = None,
-    description: Annotated[str, Query(
-        description="Filter by product description")] = None,
-):
-    products = products_crud.get_products(
-        db=db, pagination=pagination, name=name, description=description)
-    return products
-
-
 @router.post("", response_model=Product)
 def create_product(
     db: SessionDep,
@@ -32,13 +18,27 @@ def create_product(
     return product
 
 
+@router.get("", response_model=list[Product])
+def get_products(
+    db: SessionDep,
+    filter: PaginationDep,
+    name: Annotated[str, Query(
+        description="Filter by product name")] = None,
+    description: Annotated[str, Query(
+        description="Filter by product description")] = None,
+):
+    products = products_crud.get_products(
+        db=db, filter=filter, name=name, description=description)
+    return products
+
+
 @router.get("/stats", summary="Get products stats", response_model=dict)
 def get_product_stat(
     db: SessionDep,
-    params: Annotated[ProductStatsMetric, Query(description="Filter by different metrics")],
+    filter: Annotated[ProductStatsMetric, Query(description="Filter by different metrics")],
 ):
-    stats = products_crud.get_product_stat(db=db, params=params)
-    return {params.metric: stats}
+    stats = products_crud.get_product_stat(db=db, filter=filter)
+    return {filter.metric: stats}
 
 
 @router.get("/{product_id}", response_model=Product)
@@ -54,8 +54,8 @@ def get_product_by_id(
 def get_products_by_category(
     db: SessionDep,
     category_id: Annotated[int, Path(description="Filter by product id")],
-    pagination: PaginationDep,
+    filter: PaginationDep,
 ):
     product = products_crud.get_products_by_category(
-        db=db, category_id=category_id, pagination=pagination)
+        db=db, category_id=category_id, filter=filter)
     return product
