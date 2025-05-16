@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Query, Path
 from typing import Annotated
-from datetime import date
 
 from app.dependencies import SessionDep, PaginationDep, PaginatedDateFilterDep
 from app.crud import sales as sales_crud
