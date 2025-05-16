@@ -5,7 +5,7 @@ from app.utils.users import verify_password
 from app.utils.auth import create_access_token
 from app.crud import users as user_crud
 
-router = APIRouter()
+router = APIRouter(prefix="/auth", tags=["Auth"])
 
 
 @router.post("/login")

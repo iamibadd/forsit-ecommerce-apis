@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, APIRouter
 from contextlib import asynccontextmanager
 from app.database.session import create_db_and_tables
 from app.routers import users, auth, products, sales
@@ -11,11 +11,13 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="Forsit E-commerce Admin API", lifespan=lifespan)
 
+api_v2_router = APIRouter(prefix="/v2/api")
+api_v2_router.include_router(users.router)
+api_v2_router.include_router(auth.router)
+api_v2_router.include_router(products.router)
+api_v2_router.include_router(sales.router)
 
-app.include_router(users.router, prefix="/api/users", tags=["Users"])
-app.include_router(auth.router, prefix="/api/auth", tags=["Auth"])
-app.include_router(products.router, prefix="/api/products", tags=["Products"])
-app.include_router(sales.router, prefix="/api/sales", tags=["Sales"])
+app.include_router(api_v2_router)
 
 
 @app.get("/", tags=['Health Check'])

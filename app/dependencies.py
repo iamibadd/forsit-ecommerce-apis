@@ -22,7 +22,7 @@ class CustomOAuth2PasswordBearer(OAuth2PasswordBearer):
         return await super().__call__(request)
 
 
-oauth2_scheme = CustomOAuth2PasswordBearer(tokenUrl="/api/auth/login")
+oauth2_scheme = CustomOAuth2PasswordBearer(tokenUrl="/v2/api/auth/login")
 
 SessionDep = Annotated[Session, Depends(get_db)]
 

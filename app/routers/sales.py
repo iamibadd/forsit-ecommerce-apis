@@ -7,7 +7,7 @@ from app.crud import sales as sales_crud
 from app.schemas.sales import Sales, SalesProducts, SalesProductCategory, SalesStatsMetric
 
 
-router = APIRouter()
+router = APIRouter(prefix="/sales", tags=["Sales"])
 
 
 @router.get("", response_model=list[Sales])

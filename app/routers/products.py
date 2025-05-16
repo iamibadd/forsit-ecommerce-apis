@@ -4,7 +4,7 @@ from app.dependencies import SessionDep, PaginationDep, UserDep
 from app.crud import products as products_crud
 from app.schemas.products import Product, ProductCategory, ProductCreate, ProductStatsMetric
 
-router = APIRouter()
+router = APIRouter(prefix="/products", tags=["Products"])
 
 
 @router.get("", response_model=list[Product])
