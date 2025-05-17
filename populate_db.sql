@@ -6,10 +6,10 @@ CREATE TABLE IF NOT EXISTS categories (
 CREATE TABLE IF NOT EXISTS products (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    price DECIMAL(10, 2) NOT NULL,
+    price DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
     description TEXT,
-    category_id INT,
-    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL
+    category_id INT NOT NULL,
+    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS inventory (
@@ -17,6 +17,16 @@ CREATE TABLE IF NOT EXISTS inventory (
     product_id INT NOT NULL,
     quantity INT NOT NULL,
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS inventory_history (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    inventory_id INT NOT NULL,
+    changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    previous_quantity INT NOT NULL,
+    new_quantity INT NOT NULL,
+    description TEXT,
+    FOREIGN KEY (inventory_id) REFERENCES inventory(id)
 );
 
 CREATE TABLE IF NOT EXISTS sales (
@@ -36,7 +46,14 @@ CREATE TABLE IF NOT EXISTS revenue (
     FOREIGN KEY (sale_id) REFERENCES sales(id) ON DELETE CASCADE
 );
 
--- Data Insertion
+CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    is_admin BOOLEAN DEFAULT TRUE
+);
+
+
 INSERT INTO categories (name) VALUES 
 ('Electronics'), 
 ('Books'), 
