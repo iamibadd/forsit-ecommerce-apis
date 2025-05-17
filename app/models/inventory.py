@@ -3,6 +3,7 @@ from sqlmodel import SQLModel, Field, Relationship
 
 if TYPE_CHECKING:
     from .products import Product
+    from .inventory_history import InventoryHistory
 
 
 class InventoryBase(SQLModel):
@@ -17,3 +18,5 @@ class Inventory(InventoryBase, table=True):
 
     # Relationships
     product: list["Product"] = Relationship(back_populates="inventory")
+    history: list["InventoryHistory"] = Relationship(
+        back_populates="inventory")

@@ -1,7 +1,7 @@
 from fastapi import FastAPI, APIRouter
 from contextlib import asynccontextmanager
 from app.database.session import create_db_and_tables
-from app.routers import users, auth, products, sales, revenue
+from app.routers import users, auth, products, sales, revenue, inventory
 
 
 @asynccontextmanager
@@ -17,6 +17,7 @@ api_v2_router.include_router(auth.router)
 api_v2_router.include_router(products.router)
 api_v2_router.include_router(sales.router)
 api_v2_router.include_router(revenue.router)
+api_v2_router.include_router(inventory.router)
 
 app.include_router(api_v2_router)
 

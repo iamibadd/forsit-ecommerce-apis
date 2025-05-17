@@ -1,22 +1,14 @@
-from fastapi import HTTPException, status
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import func
 from app.models import Product, Category
 from app.schemas.helpers import Pagination
 from app.schemas.products import ProductCreate, ProductStatsMetric
-
-
-def raise_not_found_if_empty(data: list, resource: str, resource_id: int, offset: int = 0):
-    if not data and offset == 0:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"No {resource} found for {resource} ID {resource_id}"
-        )
+from app.helpers.if_empty import raise_not_found_if_empty
 
 
 def create_product(*, db: Session, product: ProductCreate) -> Product:
     category = db.get(Category, product.category_id)
-    raise_not_found_if_empty(category, "category", product.category_id)
+    raise_not_found_if_empty("category", product.category_id, category)
     db_product = Product.model_validate(product)
     db.add(db_product)
     db.commit()
@@ -37,15 +29,15 @@ def get_products(*, db: Session, filter: Pagination, name: str | None = None, de
 
 def get_product_by_id(*, db: Session, product_id: int) -> Product:
     product = db.get(Product, product_id)
-    raise_not_found_if_empty(product, "product", product_id)
+    raise_not_found_if_empty("product", product_id, product)
     return product
 
 
 def get_products_by_category(*, db: Session, category_id: int, filter: Pagination) -> list[Product]:
     products = db.query(Product).join(Category).options(joinedload(Product.category)).filter(Product.category_id == category_id).offset(
         filter.offset).limit(filter.limit).all()
-    raise_not_found_if_empty(products, "category",
-                             category_id, filter.offset)
+    raise_not_found_if_empty("category",
+                             category_id, products, filter.offset)
     return products
 
 

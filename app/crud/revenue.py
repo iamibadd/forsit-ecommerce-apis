@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func, desc
 from datetime import datetime, timezone, timedelta
 
-from app.models import Product, Revenue, Sale
+from app.models import Revenue
 from app.schemas.helpers import Pagination, PaginatedDateFilter
 from app.schemas.revenue import (
     RevenueDatePeriod, RevenueComparisonFilter, RevenuePeriodResponse, RevenueComparisonResponse)

@@ -13,7 +13,7 @@ def create_product(
     authenticated_user: UserDep,
     product_data: ProductCreate,
 ):
-    print(f'Product created by admin ${authenticated_user.email}')
+    print(f'Product created by admin {authenticated_user.email}')
     product = products_crud.create_product(db=db, product=product_data)
     return product
 

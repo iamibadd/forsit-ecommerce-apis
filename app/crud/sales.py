@@ -1,18 +1,9 @@
-from fastapi import HTTPException, status
-from datetime import date
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import func
 from app.models import Sale, Product
 from app.schemas.helpers import Pagination, PaginatedDateFilter
 from app.schemas.sales import SalesStatsMetric
-
-
-def raise_not_found_if_empty(data: list, resource: str, resource_id: int, offset: int = 0):
-    if not data and offset == 0:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"No {resource} found for {resource} ID {resource_id}"
-        )
+from app.helpers.if_empty import raise_not_found_if_empty
 
 
 def get_sales(*, db: Session, filter: Pagination) -> list[Sale]:
@@ -21,15 +12,11 @@ def get_sales(*, db: Session, filter: Pagination) -> list[Sale]:
 
 def get_sale_by_id(*, db: Session, sales_id: int) -> Sale:
     sale = db.get(Sale, sales_id)
-    raise_not_found_if_empty(sale, "sale", sales_id)
+    raise_not_found_if_empty("sale", sales_id, sale)
     return sale
 
 
-def get_sales_stat(
-    *,
-    db: Session,
-    filter: SalesStatsMetric
-) -> int | float:
+def get_sales_stat(*, db: Session, filter: SalesStatsMetric) -> int | float:
     start_date = filter.start_date
     end_date = filter.end_date
     metric = filter.metric
@@ -65,26 +52,26 @@ def get_sales_by_date_range(*, db: Session, filter: PaginatedDateFilter) -> list
 def get_sales_by_product(*, db: Session, product_id: int, filter: Pagination) -> list[Sale]:
     sales = db.query(Sale).filter(Sale.product_id == product_id).offset(
         filter.offset).limit(filter.limit).all()
-    raise_not_found_if_empty(sales, "product", product_id, filter.offset)
+    raise_not_found_if_empty("product", product_id, sales, filter.offset)
     return sales
 
 
 def get_sales_by_product_details(*, db: Session, product_id: int, filter: Pagination) -> list[Sale]:
     sales = db.query(Sale).options(joinedload(Sale.product)).filter(
         Sale.product_id == product_id).offset(filter.offset).limit(filter.limit).all()
-    raise_not_found_if_empty(sales, "product", product_id, filter.offset)
+    raise_not_found_if_empty("product", product_id, sales, filter.offset)
     return sales
 
 
 def get_sales_by_category(*, db: Session, category_id: int, filter: Pagination) -> list[Sale]:
     sales = db.query(Sale).join(Product).options(joinedload(Sale.product).joinedload(Product.category)).filter(
         Product.category_id == category_id).offset(filter.offset).limit(filter.limit).all()
-    raise_not_found_if_empty(sales, "category", category_id, filter.offset)
+    raise_not_found_if_empty("category", category_id, sales, filter.offset)
     return sales
 
 
 def get_sales_by_category_details(*, db: Session, category_id: int, filter: Pagination) -> list[Sale]:
     sales = db.query(Sale).join(Product).filter(Product.category_id == category_id).offset(
         filter.offset).limit(filter.limit).all()
-    raise_not_found_if_empty(sales, "category", category_id, filter.offset)
+    raise_not_found_if_empty("category", category_id, sales, filter.offset)
     return sales
