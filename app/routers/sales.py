@@ -18,7 +18,7 @@ def get_sales(
     return sales
 
 
-@router.get("/by_date_range", response_model=list[Sales])
+@router.get("/by-date-range", response_model=list[Sales])
 def get_sales_by_date_range(
     db: SessionDep,
     filter: PaginatedDateFilterDep,
