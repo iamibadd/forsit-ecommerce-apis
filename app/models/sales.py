@@ -17,7 +17,7 @@ class Sale(SaleBase, table=True):
     __tablename__ = "sales"
 
     id: int | None = Field(default=None, primary_key=True, index=True)
-    product_id: int = Field(foreign_key="products.id", ondelete="CASCADE")
+    product_id: int = Field(foreign_key="products.id", ondelete="CASCADE", index=True)
 
     # Relationships
     product: list["Product"] = Relationship(back_populates="sales")

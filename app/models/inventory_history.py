@@ -21,7 +21,7 @@ class InventoryHistory(InventoryHistoryBase, table=True):
     __tablename__ = 'inventory_history'
 
     id: int | None = Field(default=None, primary_key=True)
-    inventory_id: int = Field(foreign_key="inventory.id", nullable=False)
+    inventory_id: int = Field(foreign_key="inventory.id", nullable=False, index=True)
 
     # Relationships
     inventory: list["Inventory"] = Relationship(back_populates="history")

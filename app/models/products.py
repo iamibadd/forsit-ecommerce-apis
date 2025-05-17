@@ -23,7 +23,7 @@ class Product(ProductBase, table=True):
 
     id: int | None = Field(default=None, primary_key=True, index=True)
     category_id: int = Field(foreign_key="categories.id",
-                             nullable=False, ondelete="CASCADE")
+                             nullable=False, ondelete="CASCADE", index=True)
 
     # Relationships
     category: list["Category"] = Relationship(back_populates="product")
