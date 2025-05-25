@@ -168,8 +168,6 @@ CREATE DATABASE IF NOT EXISTS forsit_ecommerce;
 
 - Create a .env file in the project root and update the configuration:
 
-Run the following command to populate the database with initial data:
-
 ```bash
 DB_HOST = localhost
 DB_USER = root
